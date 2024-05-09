@@ -5,13 +5,13 @@
         <div class="list-wrap-card">
           <div
             class="list-wrap-card_tag"
-            :style="{ background: item.record_type === 1 ? 'green' : 'red'}"
+            :style="{ background: getLabel(item.record_type).color }"
           >
-            {{ item.record_type === 1 ? '支出' : '收入' }}
+            {{ getLabel(item.record_type).name }}
           </div>
           <div class="list-wrap-card-header">
-            {{ formatDate(item.created_date, 'yyyy-MM-dd') }}
-            {{ getDayOfWeek(item.created_date) }}
+            {{ formatDate(item.add_bill_date, 'yyyy-MM-dd') }}
+            {{ getDayOfWeek(item.add_bill_date) }}
           </div>
           <div class="list-wrap-card-content">
             <div
@@ -41,47 +41,20 @@
 <script setup>
 import { reactive, onBeforeMount, defineProps, defineEmits } from 'vue';
 import { Icon, Button, Popup, DatePicker } from 'vant';
-import { formatDate, getDayOfWeek } from '../../../utils/handle';
+import { formatDate, getDayOfWeek } from '@/utils/handle';
+import { BILL_TAG_LIST, BILL_LABEL_LIST } from '@/constant';
 
 defineProps({
   dataSource: Array,
 });
 
-const tagList = [
-  {
-    id: 1,
-    name: '吃喝',
-    color: '#dcba39'
-  },
-  {
-    id: 2,
-    name: '玩乐',
-    color: '#CDDC39'
-  },
-  {
-    id: 3,
-    name: '生活',
-    color: '#c439dc'
-  },
-  {
-    id: 4,
-    name: '交通',
-    color: '#1989fa'
-  },
-  {
-    id: 5,
-    name: '人情',
-    color: '#ff976a'
-  },
-  {
-    id: 99,
-    name: '其他',
-    color: '#673AB7'
-  },
-]
 
 const getTag = (id) => {
-  const item = tagList.find(item => item.id === id);
+  const item = BILL_TAG_LIST.find(item => item.id === id);
+  return item || {}
+}
+const getLabel = (id) => {
+  const item = BILL_LABEL_LIST.find(item => item.id === id);
   return item || {}
 }
 

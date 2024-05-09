@@ -1,9 +1,8 @@
 <template>
-  <BillDetails></BillDetails>  
+  <router-view/>
 </template>
 
 <script setup>
-import BillDetails from './views/bill-details/index.vue';
 </script>
 <style scoped>
  * {

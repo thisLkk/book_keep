@@ -1,19 +1,19 @@
-import { createRouter, createWebHistory } from 'vue-router';  
-import BillDetails from '../views/bill-details/index.vue' 
+import { createRouter, createWebHashHistory } from 'vue-router';  
+import BillDetails from '@/views/bill-details/index.vue' 
 const routes = [  
   {  
     path: '/',  
-    redirect: 'bill_details',
+    redirect: 'bill-details',
   },  
   {  
-    path: '/bill_details',  
+    path: '/bill-details',  
     name: '账单明细',  
     component: BillDetails  
-  },  
+  },   
 ];  
  
 const router = createRouter({  
-  history: createWebHistory(),  
+  history: createWebHashHistory(),  
   routes  
 });  
  
