@@ -2,36 +2,47 @@
   <div class="list-wrap">
     <template v-if="dataSource.length">
       <div v-for="(item, index) in dataSource" :key="index">
-        <div class="list-wrap-card">
-          <div
-            class="list-wrap-card_tag"
-            :style="{ background: getLabel(item.record_type).color }"
-          >
-            {{ getLabel(item.record_type).name }}
-          </div>
-          <div class="list-wrap-card-header">
-            {{ formatDate(item.add_bill_date, 'yyyy-MM-dd') }}
-            {{ getDayOfWeek(item.add_bill_date) }}
-          </div>
-          <div class="list-wrap-card-content">
+        <van-swipe-cell>
+          <div class="list-wrap-card">
             <div
-              class="list-wrap-card-content_label"
-              :style="{background: getTag(item.record_label).color}"
+              class="list-wrap-card_tag"
+              :style="{ background: getLabel(item.record_type).color }"
             >
-              {{ getTag(item.record_label).name }}
+              {{ getLabel(item.record_type).name }}
             </div>
-            <div class="list-wrap-card-content_info">
-              {{ item.title }}:
-              {{ item.money / 100 }} 元
+            <div class="list-wrap-card-header">
+              {{ formatDate(item.add_bill_date, 'yyyy-MM-dd') }}
+              {{ getDayOfWeek(item.add_bill_date) }}
             </div>
-            <div
-              v-if="item.record_remark"
-              class="list-wrap-card-content_remark"
-            >
-              {{ item.record_remark }}
+            <div class="list-wrap-card-content">
+              <div
+                class="list-wrap-card-content_label"
+                :style="{background: getTag(item.record_label).color}"
+              >
+                {{ getTag(item.record_label).name }}
+              </div>
+              <div class="list-wrap-card-content_info">
+                {{ item.title }}:
+                {{ item.money / 100 }} 元
+              </div>
+              <div
+                v-if="item.record_remark"
+                class="list-wrap-card-content_remark"
+              >
+                {{ item.record_remark }}
+              </div>
             </div>
           </div>
-        </div>
+          <template #right>
+            <van-button
+              square
+              text="删除"
+              type="danger"
+              class="delete-button"
+              @click="delBillClick(item.id)"
+            />
+          </template>
+        </van-swipe-cell>
       </div>
     </template>
     <div v-else class="list-wrap-no-data">暂无数据，快去添加吧~</div>
@@ -40,14 +51,41 @@
 
 <script setup>
 import { reactive, onBeforeMount, defineProps, defineEmits } from 'vue';
-import { Icon, Button, Popup, DatePicker } from 'vant';
+import { Icon, Button, Popup, DatePicker, SwipeCell } from 'vant';
 import { formatDate, getDayOfWeek } from '@/utils/handle';
 import { BILL_TAG_LIST, BILL_LABEL_LIST } from '@/constant';
+import axios from '@/utils/axios';
+import { AXIOS_BOOK_KEEP } from '@/constant';
 
-defineProps({
+const emit = defineEmits(['change']);
+
+const props = defineProps({
   dataSource: Array,
+  currentGetDate: String
 });
 
+const state = reactive({  
+  delBillApi: `${AXIOS_BOOK_KEEP}/del_bill`,
+});
+
+const delBillClick = (id) => {
+  axios.get(state.delBillApi, {
+    params: {
+      id
+    },
+  })
+  .then((response) => {
+    const { code, data, msg } = response;
+    if (code !== 0) {
+      alert(msg)
+      return;
+    }
+    emit('change', { date: props.currentGetDate });
+  })
+  .catch((err) => {
+    console.log('#####err', err);
+  });
+}
 
 const getTag = (id) => {
   const item = BILL_TAG_LIST.find(item => item.id === id);
@@ -139,6 +177,9 @@ const getLabel = (id) => {
     text-align: center;
     font-size: 28px;
     color: #666;
+  }
+  .delete-button {
+    height: 100%;
   }
 }
 </style>

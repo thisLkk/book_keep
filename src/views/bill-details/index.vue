@@ -2,7 +2,11 @@
   <div class="bill-details">
     <AddBillInfo @change="formChange"></AddBillInfo>
     <BillForm :monthResult="state.monthResult" @change="formChange"></BillForm>
-    <List :dataSource="state.dataSource"></List>
+    <List
+      :dataSource="state.dataSource"
+      :currentGetDate="state.currentGetDate"
+      @change="formChange"
+    ></List>
   </div>
 </template>
 
@@ -14,12 +18,14 @@ import { useRoute } from 'vue-router';
 import BillForm from './components/BillForm.vue';
 import List from './components/List.vue';
 import AddBillInfo from './components/AddBillInfo.vue';
+
 const route = useRoute();  
 const state = reactive({  
   apiGetList: `${AXIOS_BOOK_KEEP}/get_list`,
   apiGetMonth: `${AXIOS_BOOK_KEEP}/get_month_data`,
   monthResult: {},
-  dataSource: []
+  dataSource: [],
+  currentGetDate: '',
 });
 
 const getApiGetMonth = (date) => {
@@ -70,6 +76,7 @@ const getApiGetList = (date) => {
 }
 const formChange = ({ date }) => {
   if (date) {
+    state.currentGetDate = date;
     getApiGetMonth(date);
     getApiGetList(date);
   }
